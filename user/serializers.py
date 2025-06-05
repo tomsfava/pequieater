@@ -33,12 +33,12 @@ class UserPublicSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username', 'email', 'bio', 'followers_count', 'following_count', 'is_following', 'following']
 
-        def get_followers_count(self, obj):
-            return obj.followers.count()
-        def get_following_count(self, obj):
-            return obj.following.count()
-        def get_is_following(self, obj):
-            request = self.context.get("request", None)
-            if request and request.user.is_authenticated():
-                return obj.followers.filter(id=request.user.id).exists()
-            return False
+    def get_followers_count(self, obj):
+        return obj.followers.count()
+    def get_following_count(self, obj):
+        return obj.following.count()
+    def get_is_following(self, obj):
+        request = self.context.get("request", None)
+        if request and request.user.is_authenticated():
+            return obj.followers.filter(id=request.user.id).exists()
+        return False
