@@ -10,13 +10,20 @@
         :root {
             --verde-folha: #7dbd3b;
             --amarelo-laranja: #f4b400;
-            --marrom-cinza: #6e6259;
+            --marrom-cinza: #5a4a3a; /* mais marrom mesmo */
         }
         body {
             background-color: #f8f9fa;
             color: var(--marrom-cinza);
         }
         h1, h2, h3 {
+            color: var(--verde-folha);
+        }
+        .username {
+            color: var(--amarelo-laranja);
+        }
+        .subtitle {
+            font-size: 1.2rem;
             color: var(--marrom-cinza);
         }
         .btn-warning {
@@ -42,89 +49,121 @@
             background-color: var(--marrom-cinza);
             color: white;
         }
+        .btn-logout {
+            background: none;
+            border: none;
+            color: var(--marrom-cinza);
+            text-decoration: underline;
+            padding: 0.5rem;
+        }
+        .btn-logout:hover {
+            color: #000;
+        }
         .card {
             border: none;
             background-color: #fff;
+        }
+        .sidebar {
+            min-width: 250px;
+        }
+        @media (min-width: 768px) {
+            .main-content {
+                display: flex;
+                gap: 2rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container mt-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>PequiEater</h1>
-            <div class="d-flex gap-2">
+            <div>
+                <h1 class="display-4">PequiEater</h1>
+                <div class="subtitle">lugar de roer</div>
+            </div>
+            <div class="d-flex gap-3 align-items-center">
                 <a href="{% url 'post-list' %}" class="btn btn-warning">Comece a roer</a>
                 <form method="post" action="{% url 'api-logout' %}">
                     {% csrf_token %}
-                    <button class="btn btn-danger">Logout</button>
+                    <button class="btn-logout">Logout</button>
                 </form>
             </div>
         </div>
 
-        <div class="card p-4 shadow-sm mb-4">
-            <h2>{{ profile_user.username }}</h2>
-            <p class="text-muted">{{ profile_user.email }}</p>
-            <p>{{ profile_user.bio|linebreaks }}</p>
+        <div class="main-content">
+            <!-- Conteúdo principal -->
+            <div class="flex-grow-1">
+                <div class="card p-4 shadow-sm mb-4">
+                    <h2 class="username">{{ profile_user.username }}</h2>
+                    <p class="text-muted">{{ profile_user.email }}</p>
+                    <div id="profile-info">
+                        <p>{{ profile_user.bio|linebreaks }}</p>
+                    </div>
 
-            {% if not is_own_profile %}
-                <div
-                    id="follow-button"
-                    hx-post="{% url 'api-user-toggle-follow' profile_user.pk %}"
-                    hx-swap="outerHTML"
-                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                >
-                    {% if user in profile_user.followers.all %}
-                        <button class="btn btn-outline-secondary">Deixar de seguir</button>
-                    {% else %}
-                        <button class="btn btn-primary">Seguir</button>
+                    {% if not is_own_profile %}
+                        <div
+                            id="follow-button"
+                            hx-post="{% url 'api-user-toggle-follow' profile_user.pk %}"
+                            hx-swap="outerHTML"
+                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                        >
+                            {% if user in profile_user.followers.all %}
+                                <button class="btn btn-outline-secondary">Deixar de seguir</button>
+                            {% else %}
+                                <button class="btn btn-primary">Seguir</button>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if is_own_profile %}
+                        <button class="btn btn-secondary mt-2"
+                                hx-get="{% url 'user-detail' user.pk %}?edit=true"
+                                hx-target="#edit-form-container"
+                                hx-swap="innerHTML">
+                            Editar perfil
+                        </button>
                     {% endif %}
                 </div>
-            {% endif %}
 
-            {% if is_own_profile %}
-                <button class="btn btn-secondary mt-2"
-                        hx-get="{% url 'user-detail' user.pk %}?edit=true"
-                        hx-target="#edit-form-container"
-                        hx-swap="innerHTML">
-                    Editar perfil
-                </button>
-            {% endif %}
-        </div>
+                <div id="edit-form-container">
+                    {% if is_own_profile and form %}
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <button type="submit" class="btn btn-success">Salvar</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
 
-        <div id="edit-form-container">
-            {% if is_own_profile and form %}
-                <form method="post">
-                    {% csrf_token %}
-                    {{ form|crispy }}
-                    <button type="submit" class="btn btn-success">Salvar</button>
-                </form>
-            {% endif %}
-        </div>
-
-        <div class="card p-4 shadow-sm">
-            <h3>Seguindo</h3>
-            {% if following %}
-                <ul class="list-group">
-                    {% for u in following %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ u.username }}
-                            <div
-                                hx-post="{% url 'user-toggle-follow' u.pk %}"
-                                hx-swap="outerHTML"
-                                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                            >
-                                {% if u in user.following.all %}
-                                    <button class="btn btn-sm btn-outline-secondary">Deixar de seguir</button>
-                                {% else %}
-                                    <button class="btn btn-sm btn-primary">Seguir</button>
-                                {% endif %}
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="text-muted">Você não está seguindo ninguém ainda.</p>
-            {% endif %}
+            <!-- Sidebar de "Seguindo" -->
+            <div class="sidebar">
+                <div class="card p-4 shadow-sm">
+                    <h3>Seguindo</h3>
+                    {% if following %}
+                        <ul class="list-group">
+                            {% for u in following %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ u.username }}
+                                    <div
+                                        hx-post="{% url 'user-toggle-follow' u.pk %}"
+                                        hx-swap="outerHTML"
+                                        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                                    >
+                                        {% if u in user.following.all %}
+                                            <button class="btn btn-sm btn-outline-secondary">Deixar de seguir</button>
+                                        {% else %}
+                                            <button class="btn btn-sm btn-primary">Seguir</button>
+                                        {% endif %}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">Você não está seguindo ninguém ainda.</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 </body>

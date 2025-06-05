@@ -1,7 +1,7 @@
 from django.views.generic import FormView, TemplateView
 from django.contrib.auth.views import LoginView as DjangoLoginView
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
@@ -33,14 +33,11 @@ class UserDetailTemplateView(LoginRequiredMixin, TemplateView):
         profile_user = get_object_or_404(User, pk=self.kwargs["pk"])
         current_user = self.request.user
         is_own_profile = profile_user == current_user
-
-        form = UserUpdateForm(instance=current_user) if is_own_profile else None
         following = profile_user.following.all()
 
         context.update({
             "profile_user": profile_user,
             "is_own_profile": is_own_profile,
-            "form": form,
             "following": following,
         })
         return context
@@ -60,3 +57,20 @@ class UserDetailTemplateView(LoginRequiredMixin, TemplateView):
             return HttpResponse(html)
 
         return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        profile_user = get_object_or_404(User, pk=self.kwargs["pk"])
+        current_user = request.user
+
+        if profile_user != current_user:
+            return HttpResponseForbidden("Você não pode editar este perfil.")
+
+        form = UserUpdateForm(request.POST, instance=current_user)
+
+        if form.is_valid():
+            form.save()
+            return redirect("user-detail", pk=current_user.pk)
+
+        context = self.get_context_data()
+        context["form"] = form
+        return self.render_to_response(context)
