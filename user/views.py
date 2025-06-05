@@ -6,6 +6,8 @@ from rest_framework import status, generics, permissions
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
+from django.template.loader import render_to_string
+from django.http import HttpResponse
 from .serializers import UserRegisterSerializer, UserPublicSerializer
 
 User = get_user_model()
@@ -65,19 +67,16 @@ class ToggleFollowView(APIView):
         current_user = request.user
 
         if user_to_follow == current_user:
-            return Response({"detail": "You can't follow yourself"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Você não pode seguir a si mesmo."}, status=status.HTTP_400_BAD_REQUEST)
 
         if user_to_follow in current_user.following.all():
             current_user.following.remove(user_to_follow)
-            action = "unfollowed"
-
         else:
             current_user.following.add(user_to_follow)
-            action = "followed"
 
-        return Response({
-            "status": "success",
-            "action": action,
-            "target_user_id": user_to_follow.id,
-            "target_username": user_to_follow.username,
-        }, status=status.HTTP_200_OK)
+        html = render_to_string("partials/_follow_button.html", {
+            "profile_user": user_to_follow,
+            "user": current_user,
+        }, request=request)
+
+        return HttpResponse(html)
