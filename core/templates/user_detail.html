@@ -83,7 +83,7 @@
             </div>
             <div class="d-flex gap-3 align-items-center">
                 <a href="{% url 'post-list' %}" class="btn btn-warning">Comece a roer</a>
-                <form method="post" action="{% url 'api-logout' %}">
+                <form method="post" action="{% url 'logout' %}">
                     {% csrf_token %}
                     <button class="btn-logout">Logout</button>
                 </form>
