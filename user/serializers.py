@@ -39,6 +39,6 @@ class UserPublicSerializer(serializers.ModelSerializer):
         return obj.following.count()
     def get_is_following(self, obj):
         request = self.context.get("request", None)
-        if request and request.user.is_authenticated():
+        if request and request.user.is_authenticated:
             return obj.followers.filter(id=request.user.id).exists()
         return False
