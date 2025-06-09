@@ -1,48 +1,13 @@
+{% extends "base.html" %}
 {% load crispy_forms_tags %}
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Login - PequiEater</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #f9f5e5;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .site-title {
-            color: #4caf50; /* verde folha claro */
-            font-weight: 700;
-            text-align: center;
-            margin-top: 3rem;
-            margin-bottom: 3rem;
-            font-size: 2.5rem;
-            user-select: none;
-        }
-        .login-card {
-            max-width: 400px;
-            margin: 0 auto 80px auto;
-            padding: 30px;
-            border-radius: 15px;
-            background-color: #ffffff;
-            box-shadow: 0 5px 15px rgba(85, 85, 85, 0.2);
-            border: 1px solid #e0e0e0;
-        }
-        .btn-primary {
-            background-color: #f4a300; /* amarelo quase laranja */
-            border-color: #f4a300;
-        }
-        .btn-primary:hover {
-            background-color: #da8e00;
-        }
-        .register-link {
-            color: #5b4b3b; /* marrom meio cinza */
-        }
-    </style>
-</head>
-<body>
-    <h1 class="site-title">PequiEater</h1>
 
+{% block title %}Login - PequiEater{% endblock %}
+
+{% block main_header %}
+    <h1 class="site-title">PequiEater</h1>
+{% endblock %}
+
+{% block content %}
     <div class="login-card">
         <h2 class="text-center mb-4">Entrar</h2>
         <form method="post">
@@ -54,5 +19,4 @@
             Não tem uma conta? <a href="{% url 'user-register' %}">Cadastre-se</a>
         </p>
     </div>
-</body>
-</html>
+{% endblock %}
