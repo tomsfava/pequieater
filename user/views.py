@@ -6,8 +6,6 @@ from rest_framework import status, generics, permissions
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
-from django.template.loader import render_to_string
-from django.http import HttpResponse
 from .serializers import UserRegisterSerializer, UserPublicSerializer
 
 User = get_user_model()
@@ -49,14 +47,14 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserPublicSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def path(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs):
         if request.user.pk != self.get_object().pk:
-            return Response({"detail": "Not allowed to edit this profile"}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"detail": "Não permitido editar este perfil"}, status=status.HTTP_403_FORBIDDEN)
         return self.partial_update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         if request.user.pk != self.get_object().pk:
-            return Response({"detail": "Not allowed to delete this profile"}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"detail": "Não permitido deletar este perfil"}, status=status.HTTP_403_FORBIDDEN)
         return self.destroy(request, *args, **kwargs)
 
 class ToggleFollowView(APIView):
@@ -71,12 +69,10 @@ class ToggleFollowView(APIView):
 
         if user_to_follow in current_user.following.all():
             current_user.following.remove(user_to_follow)
+            action_performed="unfollowed"
         else:
             current_user.following.add(user_to_follow)
+            action_performed="followed"
 
-        html = render_to_string("partials/_follow_button.html", {
-            "profile_user": user_to_follow,
-            "user": current_user,
-        }, request=request)
-
-        return HttpResponse(html)
+        serializer = UserPublicSerializer(user_to_follow, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
