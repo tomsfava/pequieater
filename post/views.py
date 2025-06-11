@@ -1,50 +1,32 @@
-from django.views.generic import ListView, CreateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.http import HttpResponse
-from django.template.loader import render_to_string
-from django.urls import reverse_lazy
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
 
 from .models import Post
-from .forms import PostForm
+from .serializers import PostSerializer
 
-class PostListView(LoginRequiredMixin, ListView):
-    model = Post
-    template_name = "post_list.html"
-    context_object_name = "posts"
-    ordering = ["-created_at"]
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["form"] = PostForm()
-        return context
-
-class PostCreateView(LoginRequiredMixin, CreateView):
-    model = Post
-    form_class = PostForm
-    template_name = "partials/_post_form.html"
-
-    def form_valid(self, form):
-        post = form.save(commit=False)
-        post.author = self.request.user
-        post.save()
-        html = render_to_string("partials/_post.html", {"post": post})
-        return HttpResponse(html)
-
-    def form_invalid(self, form):
-        html = render_to_string("partials/_post_form.html",{"form": form})
-        return HttpResponse(html, status=400)
+class IsAuthorOrReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return obj.author == request.user
 
 
+class PostListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = Post
-    success_url = reverse_lazy("post-list")
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
-    def test_func(self):
-        post = self.get_object()
-        return self.request.user == post.author
+class PostDestroyAPIView(generics.DestroyAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
 
-    def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.object.delete()
-        return HttpResponse(status=204)
+    def get_permissions(self):
+        return [permissions.IsAuthenticated(), IsAuthorOrReadOnly()]
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
