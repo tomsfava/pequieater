@@ -359,25 +359,6 @@ files = [
 ]
 
 [[package]]
-name = "crispy-bootstrap5"
-version = "2025.4"
-description = "Bootstrap5 template pack for django-crispy-forms"
-optional = false
-python-versions = ">=3.8"
-groups = ["main"]
-files = [
-    {file = "crispy_bootstrap5-2025.4-py3-none-any.whl", hash = "sha256:51efa19c7d40e339774a6fe23407e83b95b7634cad6de70fd1f1093131bea1d9"},
-    {file = "crispy_bootstrap5-2025.4.tar.gz", hash = "sha256:d675ea7e245048905077dfe16bf1fa1ee16842f52fe88164ccc8a5e2d11119b3"},
-]
-
-[package.dependencies]
-django = ">=4.2"
-django-crispy-forms = ">=2.3"
-
-[package.extras]
-test = ["pytest", "pytest-django"]
-
-[[package]]
 name = "django"
 version = "5.2.2"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
@@ -399,18 +380,19 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
-name = "django-crispy-forms"
-version = "2.4"
-description = "Best way to have Django DRY forms"
+name = "django-cors-headers"
+version = "4.7.0"
+description = "django-cors-headers is a Django application for handling the server headers required for Cross-Origin Resource Sharing (CORS)."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "django_crispy_forms-2.4-py3-none-any.whl", hash = "sha256:5a4b99876cfb1bdd3e47727731b6d4197c51c0da502befbfbec6a93010b02030"},
-    {file = "django_crispy_forms-2.4.tar.gz", hash = "sha256:915e1ffdeb2987d78b33fabfeff8e5203c8776aa910a3a659a2c514ca125f3bd"},
+    {file = "django_cors_headers-4.7.0-py3-none-any.whl", hash = "sha256:f1c125dcd58479fe7a67fe2499c16ee38b81b397463cf025f0e2c42937421070"},
+    {file = "django_cors_headers-4.7.0.tar.gz", hash = "sha256:6fdf31bf9c6d6448ba09ef57157db2268d515d94fc5c89a0a1028e1fc03ee52b"},
 ]
 
 [package.dependencies]
+asgiref = ">=3.6"
 django = ">=4.2"
 
 [[package]]
@@ -2037,4 +2019,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12 <4.0"
-content-hash = "5496214581572a469ae765f32f9ad66d3b3e46f7cf9bb1923061aae6026bc5e6"
+content-hash = "57fa47549ab5bdd457cb7e28d38ef953cbb8d8274a65f1eecc72f2835ad0fd93"
