@@ -12,9 +12,19 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
 
 
 class PostListCreateAPIView(generics.ListCreateAPIView):
-    queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        queryset = Post.objects.all()
+
+        filter_param = self.request.query_params.get('filter')
+
+        if filter_param == 'following' and self.request.user.is_authenticated:
+            followed_users = self.request.user.following.all()
+            queryset = queryset.filter(author__in=followed_users)
+
+        return queryset.order_by('-created_at')
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
