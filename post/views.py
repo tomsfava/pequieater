@@ -19,10 +19,20 @@ class PostListCreateAPIView(generics.ListCreateAPIView):
         queryset = Post.objects.all()
 
         filter_param = self.request.query_params.get('filter')
+        author_id = self.request.query_params.get('author')
 
         if filter_param == 'following' and self.request.user.is_authenticated:
             followed_users = self.request.user.following.all()
             queryset = queryset.filter(author__in=followed_users)
+
+        elif author_id:
+            try:
+                author_id = int(author_id)
+                queryset = queryset.filter(author__id=author_id)
+            except ValueError:
+                pass
+            except self.request.user.DoesNotExist:
+                pass
 
         return queryset.order_by('-created_at')
 
