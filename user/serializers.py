@@ -5,16 +5,32 @@ User = get_user_model()
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+    password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'bio']
+        fields = ['username', 'email', 'password', 'password2', 'bio']
+
+    def validate(self, data):
+        super().validate(data)
+        password = data.get('password')
+        password2 = data.get('password2')
+
+        if password and password2 and password != password2:
+            raise serializers.ValidationError({'password2': 'As senhas devem ser idênticas'})
+
+        if 'password' in data:
+            data.pop('password2')
+
+        return data
 
     def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = User(**validated_data)
-        user.set_password(password)
-        user.save()
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password'],
+            bio=validated_data.get('bio', '')
+        )
         return user
 
 class SimpleUserSerializer(serializers.ModelSerializer):
