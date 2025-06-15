@@ -12,14 +12,13 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'password', 'password2', 'bio']
 
     def validate(self, data):
-        super().validate(data)
         password = data.get('password')
         password2 = data.get('password2')
 
         if password and password2 and password != password2:
             raise serializers.ValidationError({'password2': 'As senhas devem ser idênticas'})
 
-        if 'password' in data:
+        if 'password2' in data:
             data.pop('password2')
 
         return data

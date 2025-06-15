@@ -76,15 +76,6 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         return generics.get_object_or_404(self.get_queryset(), pk=pk)
 
-    def patch(self, request: Request, *args, **kwargs):
-        if request.user.pk != self.get_object().pk:
-            return Response({"detail": "Não permitido editar este perfil."}, status=status.HTTP_403_FORBIDDEN)
-        return self.partial_update(request, *args, **kwargs)
-
-    def delete(self, request: Request, *args, **kwargs):
-        if request.user.pk != self.get_object().pk:
-            return Response({"detail": "Não permitido deletar este perfil."}, status=status.HTTP_403_FORBIDDEN)
-        return self.destroy(request, *args, **kwargs)
 
 
 class ToggleFollowView(APIView):
