@@ -57,7 +57,7 @@ class UserListView(generics.ListAPIView):
 
 
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.all() # Adapte para o seu modelo de usuário
     serializer_class = UserPublicSerializer
 
     def get_permissions(self):
@@ -66,16 +66,8 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
         return [permissions.IsAuthenticated(), IsOwnerOrReadOnly()]
 
     def get_object(self):
-        request: Request = self.request
         pk = self.kwargs.get('pk')
-
-        if pk == 'me':
-            if request.user.is_authenticated:
-                return request.user
-            raise permissions.NotAuthenticated("Você deve estar autenticado para acessar 'meu' perfil.")
-
         return generics.get_object_or_404(self.get_queryset(), pk=pk)
-
 
 
 class ToggleFollowView(APIView):

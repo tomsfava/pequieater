@@ -6,7 +6,6 @@ urlpatterns = [
     path("login/", CustomAuthToken.as_view(), name="api-login"),
     path("logout/", LogoutView.as_view(), name="api-logout"),
     path("user/", UserListView.as_view(), name="api-user-list"),
-    path("user/me/", UserDetailView.as_view(), name="api-me-detail"),
     path("user/<int:pk>/", UserDetailView.as_view(), name="api-user-detail"),
     path("user/<int:pk>/toggle-follow/", ToggleFollowView.as_view(), name="api-user-toggle-follow"),
 ]
