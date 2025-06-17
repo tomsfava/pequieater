@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "user",
     "post",
-    "corsheaders"
+    "corsheaders",
+    "django_extensions",
 ]
 
 AUTH_USER_MODEL = "user.CustomUser"

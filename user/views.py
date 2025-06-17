@@ -13,11 +13,11 @@ from .serializers import UserRegisterSerializer, UserPublicSerializer
 User = get_user_model()
 
 
-class IsOwnerOrReadOnly(permissions.BasePermission):
+class IsOwnerOrAdmin(permissions.BasePermission):
     def has_object_permission(self, request: Request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
-        return obj == request.user
+        return obj == request.user or request.user.is_superuser
 
 
 class CustomAuthToken(ObtainAuthToken):
@@ -57,34 +57,17 @@ class UserListView(generics.ListAPIView):
 
 
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.all() # Adapte para o seu modelo de usuário
     serializer_class = UserPublicSerializer
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
             return [permissions.AllowAny()]
-        return [permissions.IsAuthenticated(), IsOwnerOrReadOnly()]
+        return [permissions.IsAuthenticated(), IsOwnerOrAdmin()]
 
     def get_object(self):
-        request: Request = self.request
         pk = self.kwargs.get('pk')
-
-        if pk == 'me':
-            if request.user.is_authenticated:
-                return request.user
-            raise permissions.NotAuthenticated("Você deve estar autenticado para acessar 'meu' perfil.")
-
         return generics.get_object_or_404(self.get_queryset(), pk=pk)
-
-    def patch(self, request: Request, *args, **kwargs):
-        if request.user.pk != self.get_object().pk:
-            return Response({"detail": "Não permitido editar este perfil."}, status=status.HTTP_403_FORBIDDEN)
-        return self.partial_update(request, *args, **kwargs)
-
-    def delete(self, request: Request, *args, **kwargs):
-        if request.user.pk != self.get_object().pk:
-            return Response({"detail": "Não permitido deletar este perfil."}, status=status.HTTP_403_FORBIDDEN)
-        return self.destroy(request, *args, **kwargs)
 
 
 class ToggleFollowView(APIView):
