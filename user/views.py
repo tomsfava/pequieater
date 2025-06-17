@@ -13,11 +13,11 @@ from .serializers import UserRegisterSerializer, UserPublicSerializer
 User = get_user_model()
 
 
-class IsOwnerOrReadOnly(permissions.BasePermission):
+class IsOwnerOrAdmin(permissions.BasePermission):
     def has_object_permission(self, request: Request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
-        return obj == request.user
+        return obj == request.user or request.user.is_superuser
 
 
 class CustomAuthToken(ObtainAuthToken):
@@ -63,7 +63,7 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
             return [permissions.AllowAny()]
-        return [permissions.IsAuthenticated(), IsOwnerOrReadOnly()]
+        return [permissions.IsAuthenticated(), IsOwnerOrAdmin()]
 
     def get_object(self):
         pk = self.kwargs.get('pk')
