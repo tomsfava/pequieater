@@ -141,5 +141,5 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "http://pequieater.vercel.app",
+    "https://pequieater.vercel.app",
 ]
