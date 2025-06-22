@@ -1,1 +1,2 @@
-# pequieater
+# PequiEater
+PequiEater é um microblog 100% brasileiro, 100% projeto educacional e 100% feito no cerrado, essa API é construída com Django Rest Framework e a aplicação front-end foi construída com VITE + React;
