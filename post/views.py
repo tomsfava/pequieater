@@ -1,8 +1,8 @@
 from rest_framework import views, generics, permissions, status
 from rest_framework.response import Response
 
-from .models import Post
-from .serializers import PostSerializer
+from .models import Post, Comment
+from .serializers import PostSerializer, CommentSerializer
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -68,3 +68,15 @@ class ToggleLikeAPIView(views.APIView):
         else:
             post.likes.add(user)
             return Response({'message': 'Post curtido'}, status=status.HTTP_200_OK)
+
+    class CommentListCreateAPIView(generics.ListCreateAPIView):
+        serializer_class = CommentSerializer
+        permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+        def get_queryset(self):
+            post_id = self.kwargs.get('pk')
+            return Comment.objects.filter(post_id=post_id)
+
+        def perform_create(self, serializer):
+            post_id = self.kwargs.get('pk')
+            serializer.save(author=self.request.user, post_id=post_id)
