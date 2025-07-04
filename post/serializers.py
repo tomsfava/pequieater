@@ -7,10 +7,11 @@ class PostSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
     likes_count = serializers.SerializerMethodField()
     liked_by_user = serializers.SerializerMethodField()
+    images_url = serializers.URLField(required=False, allow_null=True)
 
     class Meta:
         model = Post
-        fields = ['id', 'author', 'content', 'created_at', 'likes_count', 'liked_by_user']
+        fields = ['id', 'author', 'content', 'created_at', 'likes_count', 'liked_by_user', 'image_url']
         read_only_fields = ['id', 'author', 'created_at', 'likes_count', 'liked_by_user']
 
     def get_likes_count(self, obj):

@@ -14,6 +14,7 @@ class Post(models.Model):
         related_name='liked_posts',
         blank=True
     )
+    image_url = models.URLField(null=True, blank=True)
 
     class Meta:
         ordering = ["-created_at"]
