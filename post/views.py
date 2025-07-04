@@ -1,4 +1,4 @@
-from rest_framework import views, generics, permissions, status
+from rest_framework import views, generics, permissions, status,exceptions
 from rest_framework.response import Response
 
 from .models import Post, Comment
@@ -80,3 +80,13 @@ class CommentListCreateAPIView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         post_id = self.kwargs.get('pk')
         serializer.save(author=self.request.user, post_id=post_id)
+
+class CommentDestroyAPIView(generics.DestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_destroy(self, instance):
+        if instance.author != self.request.user:
+            raise exceptions.PermissionDenied("Você não tem permissão para deletar este comentário.")
+        instance.delete()
