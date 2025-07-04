@@ -11,7 +11,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'author', 'content', 'created_at', 'likes_count', 'liked_by_user', 'image_url']
+        fields = ['id', 'author', 'content', 'created_at', 'likes_count', 'liked_by_user', 'images_url']
         read_only_fields = ['id', 'author', 'created_at', 'likes_count', 'liked_by_user']
 
     def get_likes_count(self, obj):

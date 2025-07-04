@@ -69,14 +69,14 @@ class ToggleLikeAPIView(views.APIView):
             post.likes.add(user)
             return Response({'message': 'Post curtido'}, status=status.HTTP_200_OK)
 
-    class CommentListCreateAPIView(generics.ListCreateAPIView):
-        serializer_class = CommentSerializer
-        permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+class CommentListCreateAPIView(generics.ListCreateAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-        def get_queryset(self):
-            post_id = self.kwargs.get('pk')
-            return Comment.objects.filter(post_id=post_id)
+    def get_queryset(self):
+        post_id = self.kwargs.get('pk')
+        return Comment.objects.filter(post_id=post_id)
 
-        def perform_create(self, serializer):
-            post_id = self.kwargs.get('pk')
-            serializer.save(author=self.request.user, post_id=post_id)
+    def perform_create(self, serializer):
+        post_id = self.kwargs.get('pk')
+        serializer.save(author=self.request.user, post_id=post_id)
