@@ -92,3 +92,22 @@ class ToggleFollowView(APIView):
             'user': serializer.data,
             'action': action_performed
              }, status=status.HTTP_200_OK)
+
+class ChangePasswordAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request: Request):
+        user: User = request.user
+        current_password = request.data.get("current_password")
+        new_password = request.data.get("new_password")
+
+        if not current_password or not new_password:
+            return Response({"detail": "Senha atual e nova senha são obrigatórias"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not user.check_password(current_password):
+            return Response({"detail": "Senha atual incorreta"}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response({"message": "Senha atualizada com sucesso"}, status=status.HTTP_200_OK)

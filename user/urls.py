@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserRegisterView, CustomAuthToken, UserListView, UserDetailView, LogoutView, ToggleFollowView
+from .views import UserRegisterView, CustomAuthToken, UserListView, UserDetailView, LogoutView, ToggleFollowView, ChangePasswordAPIView
 
 urlpatterns = [
     path("register/", UserRegisterView.as_view(), name="api-user-register"),
@@ -8,4 +8,5 @@ urlpatterns = [
     path("user/", UserListView.as_view(), name="api-user-list"),
     path("user/<int:pk>/", UserDetailView.as_view(), name="api-user-detail"),
     path("user/<int:pk>/toggle-follow/", ToggleFollowView.as_view(), name="api-user-toggle-follow"),
+    path("user/change-password/", ChangePasswordAPIView.as_view(), name="api-user-change-password"),
 ]
