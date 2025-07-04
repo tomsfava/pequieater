@@ -9,7 +9,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'password2', 'bio']
+        fields = ['username', 'email', 'password', 'password2', 'bio', 'avatar_url']
 
     def validate(self, data):
         password = data.get('password')
@@ -28,14 +28,15 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             username=validated_data['username'],
             email=validated_data['email'],
             password=validated_data['password'],
-            bio=validated_data.get('bio', '')
+            bio=validated_data.get('bio', ''),
+            avatar_url=validated_data.get('avatar_url', ''),
         )
         return user
 
 class SimpleUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username']
+        fields = ['id', 'username', 'avatar_url']
 
 class UserPublicSerializer(serializers.ModelSerializer):
     followers_count = serializers.SerializerMethodField(read_only=True)
@@ -46,7 +47,7 @@ class UserPublicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'bio', 'followers_count', 'following_count', 'is_following', 'following', 'followers']
+        fields = ['id', 'username', 'email', 'bio', 'followers_count', 'following_count', 'is_following', 'following', 'followers', 'avatar_url']
         read_only_fields = ['id', 'username', 'followers_count', 'following_count', 'is_following', 'following', 'followers']
 
     def get_followers_count(self, obj):
