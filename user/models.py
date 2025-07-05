@@ -9,5 +9,6 @@ class CustomUser(AbstractUser):
         related_name='followers',
         blank=True,
     )
+    avatar_url = models.URLField(null=True, blank=True)
 
 
